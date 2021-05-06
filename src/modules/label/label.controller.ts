@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { LabelService } from './label.service';
 
-@Controller('label')
+@Controller('api2/label')
 export class LabelController {
   constructor(private readonly labelService: LabelService) {}
 

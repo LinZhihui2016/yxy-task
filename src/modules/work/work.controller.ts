@@ -14,7 +14,7 @@ import { dateFormat, initDate, isDate } from '../../util/date';
 import { ErrYezi, ResException } from '../../util/error';
 import * as dayjs from 'dayjs';
 
-@Controller('work')
+@Controller('api2/work')
 export class WorkController {
   constructor(private readonly workService: WorkService) {}
 

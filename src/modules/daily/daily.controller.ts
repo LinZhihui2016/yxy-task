@@ -14,9 +14,9 @@ import { CreateDailyDto } from './daily.dto';
 import { isDate } from 'class-validator';
 import { ErrYezi, ResException } from '../../util/error';
 import * as dayjs from 'dayjs';
-import { ApiBody, ApiParam } from '@nestjs/swagger';
+import { ApiParam } from '@nestjs/swagger';
 
-@Controller('daily')
+@Controller('api2/daily')
 export class DailyController {
   constructor(private readonly dailyService: DailyService) {}
 
