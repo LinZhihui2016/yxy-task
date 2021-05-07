@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm';
-import { IsDateString, IsInt, IsString } from 'class-validator';
+import { IsDate, IsInt, IsString } from 'class-validator';
 import { LabelEntity } from '../label/label.entity';
 import { $BaseEntity } from '../../util/entity';
 
@@ -18,6 +18,6 @@ export class DailyEntity extends $BaseEntity {
   mark: string;
 
   @Column('datetime')
-  @IsDateString()
+  @IsDate()
   date: Date;
 }
