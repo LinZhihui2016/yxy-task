@@ -11,7 +11,6 @@ export class DailyEntity extends $BaseEntity {
 
   @Column({ type: 'int', default: 1 })
   @IsInt()
-  z;
   content: number;
 
   @Column({ type: 'varchar', default: '' })
