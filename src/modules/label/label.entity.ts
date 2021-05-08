@@ -28,4 +28,10 @@ export class LabelEntity extends $BaseEntity {
     default: LabelType.COUNT,
   })
   type: LabelType;
+
+  @Column({ type: 'varchar', nullable: true })
+  icon: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  color: string;
 }

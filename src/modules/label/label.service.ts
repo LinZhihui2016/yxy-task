@@ -20,19 +20,26 @@ export class LabelService {
   }
 
   async create(data): Promise<LabelEntity> {
-    const { name, unit, pid, type } = data;
+    const { name, unit, pid, type, icon, color } = data;
     const dataCheck = await getRepository(LabelEntity).findOne({
       where: { name, pid },
     });
     if (dataCheck) throw new ResException(ErrYezi.已存在);
-    const $data = await $val(new LabelEntity(), { name, unit, pid, type });
+    const $data = await $val(new LabelEntity(), {
+      name,
+      unit,
+      pid,
+      type,
+      icon,
+      color,
+    });
     return await this.labelRepository.save($data);
   }
 
   async edit(id, data): Promise<LabelEntity> {
-    const { name, unit } = data;
+    const { name, unit, icon, color } = data;
     const dataToUpdate = await this.byId(id);
-    const $data = await $val(dataToUpdate, { name, unit });
+    const $data = await $val(dataToUpdate, { name, unit, icon, color });
     return this.labelRepository.save($data);
   }
 
@@ -40,7 +47,7 @@ export class LabelService {
     const where = { pid };
     return await getRepository(LabelEntity).find({
       where,
-      select: ['id', 'name', 'unit', 'type'],
+      select: ['id', 'name', 'unit', 'type', 'icon', 'color'],
     });
   }
 }
