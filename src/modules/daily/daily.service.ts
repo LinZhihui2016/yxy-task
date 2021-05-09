@@ -45,8 +45,8 @@ export class DailyService {
     return this.dailyRepository.remove(dataToRemove);
   }
 
-  async get(label: number, start: Date, end: Date) {
-    const where = { label, date: Between(start, end) };
+  async get(start: Date, end: Date) {
+    const where = { date: Between(start, end) };
     const [list, count] = await this.dailyRepository
       .createQueryBuilder('daily')
       .where(where)
@@ -58,7 +58,7 @@ export class DailyService {
       )
       .getManyAndCount();
     return {
-      list: arrFlat(list, 'label', ['name', 'unit', 'type']),
+      list: arrFlat(list, 'label', ['name', 'unit', 'type', 'pid']),
       count,
     };
   }

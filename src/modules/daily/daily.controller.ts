@@ -11,10 +11,10 @@ import {
 } from '@nestjs/common';
 import { DailyService } from './daily.service';
 import { CreateDailyDto } from './daily.dto';
-import { isDate } from 'class-validator';
 import { ErrYezi, ResException } from '../../util/error';
 import * as dayjs from 'dayjs';
 import { ApiParam } from '@nestjs/swagger';
+import { isDate } from '../../util/date';
 
 @Controller('api2/daily')
 export class DailyController {
@@ -38,12 +38,8 @@ export class DailyController {
     return '删除成功';
   }
 
-  @Get(':label')
-  @ApiParam({ name: 'label' })
-  getList(
-    @Param('label', new ParseIntPipe()) label: number,
-    @Query() { start, end },
-  ) {
+  @Get()
+  getList(@Query() { start, end }) {
     const $isDate = isDate(start) && isDate(end);
     const $start = $isDate ? dayjs(start) : dayjs();
     const $end = $isDate ? dayjs(end) : dayjs().add(1, 'day');
@@ -51,7 +47,6 @@ export class DailyController {
       throw new ResException(ErrYezi.参数类型错误, '时间错误');
     }
     return this.dailyService.get(
-      label,
       $start.startOf('day').toDate(),
       $end.startOf('day').toDate(),
     );
