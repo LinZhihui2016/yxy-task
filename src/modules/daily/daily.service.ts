@@ -58,7 +58,14 @@ export class DailyService {
       )
       .getManyAndCount();
     return {
-      list: arrFlat(list, 'label', ['name', 'unit', 'type', 'pid']),
+      list: arrFlat(list, 'label', [
+        'name',
+        'unit',
+        'type',
+        'pid',
+        'color',
+        'icon',
+      ]),
       count,
     };
   }
