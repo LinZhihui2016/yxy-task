@@ -22,7 +22,8 @@ export class DailyController {
 
   @Post()
   create(@Body() daily: CreateDailyDto) {
-    return this.dailyService.create(daily);
+    const date = isDate(daily.date) ? dayjs(daily.date) : dayjs();
+    return this.dailyService.create({ ...daily, date });
   }
 
   @Patch(':id')

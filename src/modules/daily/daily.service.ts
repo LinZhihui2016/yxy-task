@@ -23,9 +23,34 @@ export class DailyService {
 
   async create(data) {
     const { date, label, content, mark } = data;
-    const $date = date ? new Date(date) : new Date();
+    const start = date.startOf('day').toDate();
+    const end = date.startOf('day').add(1, 'day').toDate();
+    const where = { date: Between(start, end), label };
+    const dataCheck = await this.dailyRepository
+      .createQueryBuilder('daily')
+      .where(where)
+      .leftJoinAndMapOne(
+        'daily.label',
+        LabelEntity,
+        'label',
+        'daily.label=label.id',
+      )
+      .getOne();
+    if (dataCheck) {
+      const type = dataCheck.label.type;
+      const dataToUpdate = await this.byId(dataCheck.id);
+      let $content = 0;
+      if (type === 'count') {
+        $content = dataToUpdate.content + content;
+      }
+      if (type === 'check') {
+        $content = content;
+      }
+      const $data = await $val(dataToUpdate, { content: $content, mark });
+      return this.dailyRepository.save($data);
+    }
     const $data = await $val(new DailyEntity(), {
-      date: $date,
+      date: date.toDate(),
       label,
       content,
       mark,
@@ -36,6 +61,9 @@ export class DailyService {
   async edit(id, data) {
     const { content = 1, mark } = data;
     const dataToUpdate = await this.byId(id);
+    if (content <= 0) {
+      return this.del(dataToUpdate.id);
+    }
     const $data = await $val(dataToUpdate, { content, mark });
     return this.dailyRepository.save($data);
   }
