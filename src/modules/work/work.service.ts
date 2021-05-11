@@ -4,7 +4,7 @@ import { Between, getRepository, Repository } from 'typeorm';
 import { WorkEntity, WorkStatus } from './work.entity';
 import { ErrYezi, ResException } from '../../util/error';
 import { $val } from '../../util/mysql';
-import { isDefined, IsIn } from 'class-validator';
+import { isDefined } from 'class-validator';
 import { toNum } from '../../util/boolean';
 
 @Injectable()
@@ -24,9 +24,10 @@ export class WorkService {
   async create(data) {
     const { deadline, content, deadline_date } = data;
     const $data = await $val(new WorkEntity(), {
+      status: WorkStatus.TODO,
       deadline,
       content,
-      deadline_date: deadline_date.format(),
+      deadline_date: deadline_date.toDate(),
     });
     return await this.workRepository.save($data);
   }

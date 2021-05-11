@@ -7,7 +7,7 @@ export const $val = async (entity: ObjectLiteral, data: ObjectLiteral) => {
   if (errors.length > 0) {
     throw new ResException(
       ErrYezi.参数类型错误,
-      errors.map((i) => i.property),
+      errors.map((i) => i.property + '类型错误'),
     );
   }
   return entity;

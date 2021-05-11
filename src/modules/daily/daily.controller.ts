@@ -14,7 +14,7 @@ import { CreateDailyDto } from './daily.dto';
 import { ErrYezi, ResException } from '../../util/error';
 import * as dayjs from 'dayjs';
 import { ApiParam } from '@nestjs/swagger';
-import { isDate } from '../../util/date';
+import { initDate, isDate } from '../../util/date';
 
 @Controller('api2/daily')
 export class DailyController {
@@ -42,8 +42,8 @@ export class DailyController {
   @Get()
   getList(@Query() { start, end }) {
     const $isDate = isDate(start) && isDate(end);
-    const $start = $isDate ? dayjs(start) : dayjs();
-    const $end = $isDate ? dayjs(end) : dayjs().add(1, 'day');
+    const $start = $isDate ? initDate(start) : dayjs();
+    const $end = $isDate ? initDate(end) : dayjs().add(1, 'day');
     if ($start.isAfter($end)) {
       throw new ResException(ErrYezi.参数类型错误, '时间错误');
     }

@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { WorkService } from './work.service';
 import { CreateWorkDto } from './work.dto';
-import { dateFormat, initDate, isDate } from '../../util/date';
+import { initDate, isDate } from '../../util/date';
 import { ErrYezi, ResException } from '../../util/error';
 import * as dayjs from 'dayjs';
 
@@ -22,8 +22,8 @@ export class WorkController {
   get(@Query() query) {
     const { start, end, deadline, status } = query;
     const $isDate = isDate(start) && isDate(end);
-    const $start = $isDate ? dayjs(start) : dayjs().add(1, 'day');
-    const $end = $isDate ? dayjs(end) : dayjs().add(2, 'day');
+    const $start = $isDate ? initDate(start) : dayjs().add(1, 'day');
+    const $end = $isDate ? initDate(end) : dayjs().add(2, 'day');
     if ($start.isAfter($end)) {
       throw new ResException(ErrYezi.参数类型错误, '时间错误');
     }
@@ -53,10 +53,17 @@ export class WorkController {
     if (deadline && !isDate(deadline_date)) {
       throw new ResException(ErrYezi.参数类型错误, '请输入deadline');
     }
-    const obj = { content, status, deadline };
+    const obj = {};
+    if (status) {
+      Object.assign(obj, { status });
+    }
+    if (content) {
+      Object.assign(obj, { content });
+    }
     if (deadline) {
       Object.assign(obj, {
-        deadline_date: dateFormat(deadline_date),
+        deadline_date: dayjs(deadline_date).toDate(),
+        deadline,
       });
     }
     return this.workService.update(id, obj);

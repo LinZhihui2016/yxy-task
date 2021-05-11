@@ -46,7 +46,11 @@ export class DailyService {
       if (type === 'check') {
         $content = content;
       }
-      const $data = await $val(dataToUpdate, { content: $content, mark });
+      const $mark = [dataCheck.mark, mark].filter(Boolean).join(',');
+      const $data = await $val(dataToUpdate, {
+        content: $content,
+        mark: $mark,
+      });
       return this.dailyRepository.save($data);
     }
     const $data = await $val(new DailyEntity(), {
