@@ -82,6 +82,7 @@ export class DailyService {
     const [list, count] = await this.dailyRepository
       .createQueryBuilder('daily')
       .where(where)
+      .orderBy('date', 'ASC')
       .leftJoinAndMapOne(
         'daily.label',
         LabelEntity,
