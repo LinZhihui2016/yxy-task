@@ -1,10 +1,16 @@
 import { Column, Entity } from 'typeorm';
-import { IsBoolean, IsDate, IsEnum, Length } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsDefined,
+  IsEnum,
+  Length,
+  ValidateIf,
+} from 'class-validator';
 import { $BaseEntity } from '../../util/entity';
 
 export enum WorkStatus {
   TODO = 'todo',
-  CANCEL = 'cancel',
   FINISH = 'finish',
 }
 
@@ -22,11 +28,17 @@ export class WorkEntity extends $BaseEntity {
   @IsEnum(WorkStatus)
   status: WorkStatus;
 
-  @Column({ type: 'datetime' })
+  @Column({ type: 'datetime', nullable: true })
+  @ValidateIf((o, v) => !IsDefined(v))
   @IsDate()
   deadline_date: Date;
 
   @Column('boolean')
   @IsBoolean()
   deadline: boolean;
+
+  @Column({ type: 'datetime', nullable: true })
+  @ValidateIf((o, v) => !IsDefined(v))
+  @IsDate()
+  finish_date: Date;
 }

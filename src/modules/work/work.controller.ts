@@ -10,62 +10,65 @@ import {
 } from '@nestjs/common';
 import { WorkService } from './work.service';
 import { CreateWorkDto } from './work.dto';
-import { initDate, isDate } from '../../util/date';
+import { dateRange, initDate, isDate } from '../../util/date';
 import { ErrYezi, ResException } from '../../util/error';
 import * as dayjs from 'dayjs';
+import { WorkStatus } from './work.entity';
 
 @Controller('api2/work')
 export class WorkController {
   constructor(private readonly workService: WorkService) {}
 
+  @Get('finish')
+  getFinish(@Query() query) {
+    const { start, end } = query;
+    const finish_date: dayjs.Dayjs[] = dateRange(start, end);
+    return this.workService.getFinishList(finish_date.map((i) => i.toDate()));
+  }
   @Get()
   get(@Query() query) {
     const { start, end, deadline, status } = query;
-    const $isDate = isDate(start) && isDate(end);
-    const $start = $isDate ? initDate(start) : dayjs().add(1, 'day');
-    const $end = $isDate ? initDate(end) : dayjs().add(2, 'day');
-    if ($start.isAfter($end)) {
-      throw new ResException(ErrYezi.参数类型错误, '时间错误');
-    }
-    return this.workService.get(
+    const deadline_date: dayjs.Dayjs[] = dateRange(start, end);
+    return this.workService.getDeadlineList(
       status,
-      $start.startOf('day').toDate(),
-      $end.startOf('day').toDate(),
       deadline,
+      deadline_date.map((i) => i.toDate()),
     );
   }
 
   @Post()
   create(@Body() work: CreateWorkDto) {
     const { content, deadline, deadline_date } = work;
-    const $deadline_date = initDate(deadline_date);
-    const $deadline = !!deadline;
     return this.workService.create({
-      deadline: $deadline,
-      deadline_date: $deadline_date,
+      deadline,
+      deadline_date,
       content,
+    });
+  }
+
+  @Patch('deadline/:id')
+  setDeadline(@Param('id', new ParseIntPipe()) id: number, @Body() data) {
+    const { deadline, deadline_date } = data;
+    const obj = { deadline: !!deadline, deadline_date };
+    if (deadline && !isDate(deadline_date))
+      throw new ResException(ErrYezi.参数类型错误, '请输入正确的deadline_date');
+    obj.deadline_date = deadline ? dayjs(deadline_date).toDate() : null;
+    return this.workService.update(id, obj);
+  }
+
+  @Patch('finish/:id')
+  finishWork(@Param('id', new ParseIntPipe()) id: number, @Body() data) {
+    const finish_date = initDate(data.finish_date).toDate();
+    return this.workService.update(id, {
+      status: WorkStatus.FINISH,
+      finish_date,
     });
   }
 
   @Patch(':id')
   edit(@Param('id', new ParseIntPipe()) id: number, @Body() data) {
-    const { content, deadline, deadline_date, status } = data;
-    if (deadline && !isDate(deadline_date)) {
-      throw new ResException(ErrYezi.参数类型错误, '请输入deadline');
-    }
-    const obj = {};
-    if (status) {
-      Object.assign(obj, { status });
-    }
-    if (content) {
-      Object.assign(obj, { content });
-    }
-    if (deadline) {
-      Object.assign(obj, {
-        deadline_date: dayjs(deadline_date).toDate(),
-        deadline,
-      });
-    }
+    const { content } = data;
+    const obj = { content };
     return this.workService.update(id, obj);
   }
 }
