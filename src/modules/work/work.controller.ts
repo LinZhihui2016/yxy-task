@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -70,5 +71,10 @@ export class WorkController {
     const { content } = data;
     const obj = { content };
     return this.workService.update(id, obj);
+  }
+
+  @Delete(':id')
+  del(@Param('id', new ParseIntPipe()) id: number) {
+    return this.workService.del(id);
   }
 }

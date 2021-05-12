@@ -67,4 +67,9 @@ export class WorkService {
     const [list, count] = await this.workRepository.findAndCount({ where });
     return { list, count };
   }
+
+  async del(id: number) {
+    const workToRemove = await this.byId(id);
+    return this.workRepository.remove(workToRemove);
+  }
 }
