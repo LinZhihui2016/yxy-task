@@ -44,7 +44,12 @@ export class WorkService {
       const [start, end] = finishDate;
       Object.assign(where, { finish_date: Between(start, end) });
     }
-    const [list, count] = await this.workRepository.findAndCount({ where });
+    const [list, count] = await this.workRepository.findAndCount({
+      where,
+      order: {
+        finish_date: 'ASC',
+      },
+    });
     return { list, count };
   }
 
@@ -64,7 +69,12 @@ export class WorkService {
     if (isDefined(status) && WorkStatus[status.toUpperCase()]) {
       Object.assign(where, { status });
     }
-    const [list, count] = await this.workRepository.findAndCount({ where });
+    const [list, count] = await this.workRepository.findAndCount({
+      where,
+      order: {
+        deadline_date: 'ASC',
+      },
+    });
     return { list, count };
   }
 
